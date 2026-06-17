@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <issue id="LockedOrientationActivity">
+        <ignore path="src/main/AndroidManifest.xml" />
+    </issue>
+    <issue id="DiscouragedApi">
+        <ignore path="src/main/AndroidManifest.xml" />
+    </issue>
+    <issue id="SetJavaScriptEnabled">
+        <ignore path="src/main/java/com/redinnovationlabs/redinnovationnda/presentation/screens/InAppWebViewScreen.kt" />
+    </issue>
+    <issue id="WebViewApiAvailability">
+        <ignore path="src/main/java/com/redinnovationlabs/redinnovationnda/presentation/screens/InAppWebViewScreen.kt" />
+    </issue>
+    <issue id="OldTargetApi" severity="ignore" />
+    <issue id="AndroidGradlePluginVersion" severity="ignore" />
+    <issue id="GradleDependency" severity="ignore" />
+    <issue id="NewerVersionAvailable" severity="ignore" />
+</lint>
