@@ -15,18 +15,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -38,12 +32,10 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.redinnovationlabs.redinnovationnda.R
 import com.redinnovationlabs.redinnovationnda.presentation.theme.RedNdaBlack
 import com.redinnovationlabs.redinnovationnda.presentation.theme.RedNdaBorderGray
@@ -64,7 +56,6 @@ fun SplashScreen(
     val logoScale = remember { Animatable(0.88f) }
     val logoAlpha = remember { Animatable(0f) }
     val accentProgress = remember { Animatable(0f) }
-    var contentAlpha by remember { mutableFloatStateOf(0f) }
 
     LaunchedEffect(Unit) {
         launch {
@@ -85,8 +76,6 @@ fun SplashScreen(
                 animationSpec = tween(durationMillis = 1100, easing = LinearEasing)
             )
         }
-        delay(320.milliseconds)
-        contentAlpha = 1f
         delay(SPLASH_DURATION_MILLIS.milliseconds)
         onFinished()
     }
@@ -109,9 +98,9 @@ fun SplashScreen(
                 )
         ) {
             val isLargePortrait = maxWidth >= 600.dp
-            val heroWidth = if (isLargePortrait) 560.dp else 332.dp
-            val heroPadding = if (isLargePortrait) 18.dp else 12.dp
-            val heroRadius = if (isLargePortrait) 34.dp else 26.dp
+            val heroWidth = if (isLargePortrait) 620.dp else 356.dp
+            val heroPadding = if (isLargePortrait) 22.dp else 16.dp
+            val heroRadius = if (isLargePortrait) 36.dp else 28.dp
 
             SplashBackdrop(accentProgress = accentProgress.value)
 
@@ -170,12 +159,13 @@ fun SplashScreen(
                                     .fillMaxWidth()
                                     .clip(RoundedCornerShape(if (isLargePortrait) 24.dp else 18.dp))
                                     .background(Color.White.copy(alpha = 0.95f))
-                                    .padding(if (isLargePortrait) 10.dp else 8.dp)
+                                    .padding(if (isLargePortrait) 18.dp else 12.dp)
                             ) {
                                 Image(
-                                    painter = painterResource(id = R.drawable.ic_launcher_shared_art),
+                                    painter = painterResource(id = R.drawable.logo_innovation_labs),
                                     contentDescription = "RED Innovation Experience",
-                                    modifier = Modifier.fillMaxWidth()
+                                    modifier = Modifier.fillMaxWidth(),
+                                    contentScale = ContentScale.FillWidth
                                 )
 
                                 Canvas(modifier = Modifier.matchParentSize()) {
@@ -198,7 +188,7 @@ fun SplashScreen(
 
                             Canvas(
                                 modifier = Modifier
-                                    .fillMaxWidth(0.42f)
+                                    .fillMaxWidth(0.36f)
                                     .height(4.dp)
                             ) {
                                 drawLine(
@@ -212,51 +202,6 @@ fun SplashScreen(
                         }
                     }
                 }
-
-                Spacer(modifier = Modifier.height(if (isLargePortrait) 30.dp else 24.dp))
-
-                Text(
-                    text = "RED AUTOMATION LABS",
-                    color = RedNdaBlack,
-                    modifier = Modifier.alpha(contentAlpha),
-                    style = MaterialTheme.typography.headlineMedium.copy(
-                        fontWeight = FontWeight.ExtraBold,
-                        fontSize = if (isLargePortrait) 34.sp else 26.sp,
-                        letterSpacing = 0.8.sp
-                    ),
-                    textAlign = TextAlign.Center
-                )
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                Canvas(
-                    modifier = Modifier
-                        .alpha(contentAlpha)
-                        .fillMaxWidth(0.34f)
-                        .height(4.dp)
-                ) {
-                    drawLine(
-                        color = RedNdaRed,
-                        start = Offset.Zero,
-                        end = Offset(size.width, 0f),
-                        strokeWidth = 4.dp.toPx(),
-                        cap = StrokeCap.Round
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Text(
-                    text = "PREPARING NDA EXPERIENCE",
-                    color = RedNdaBlack.copy(alpha = 0.68f),
-                    modifier = Modifier.alpha(contentAlpha),
-                    style = MaterialTheme.typography.bodyLarge.copy(
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = if (isLargePortrait) 17.sp else 14.sp,
-                        letterSpacing = 1.1.sp
-                    ),
-                    textAlign = TextAlign.Center
-                )
 
                 Spacer(modifier = Modifier.weight(1f))
             }

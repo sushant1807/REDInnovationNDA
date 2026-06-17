@@ -1,5 +1,8 @@
 package com.redinnovationlabs.redinnovationnda.presentation.screens
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -25,6 +28,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -34,6 +39,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -55,6 +63,9 @@ import com.redinnovationlabs.redinnovationnda.presentation.theme.RedNdaRedDark
 import com.redinnovationlabs.redinnovationnda.presentation.theme.RedNdaTheme
 import com.redinnovationlabs.redinnovationnda.presentation.theme.RedNdaWhite
 import com.redinnovationlabs.redinnovationnda.presentation.viewmodel.model.HomeUiState
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun HomeScreen(
@@ -78,6 +89,49 @@ fun NdaHomeScreen(
     onScanClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val logoProgress = remember { Animatable(0f) }
+    val headerProgress = remember { Animatable(0f) }
+    val firstCardProgress = remember { Animatable(0f) }
+    val secondCardProgress = remember { Animatable(0f) }
+    val footerProgress = remember { Animatable(0f) }
+
+    LaunchedEffect(Unit) {
+        launch {
+            logoProgress.animateTo(
+                targetValue = 1f,
+                animationSpec = tween(durationMillis = 480, easing = FastOutSlowInEasing)
+            )
+        }
+        launch {
+            delay(80.milliseconds)
+            headerProgress.animateTo(
+                targetValue = 1f,
+                animationSpec = tween(durationMillis = 520, easing = FastOutSlowInEasing)
+            )
+        }
+        launch {
+            delay(170.milliseconds)
+            firstCardProgress.animateTo(
+                targetValue = 1f,
+                animationSpec = tween(durationMillis = 560, easing = FastOutSlowInEasing)
+            )
+        }
+        launch {
+            delay(280.milliseconds)
+            secondCardProgress.animateTo(
+                targetValue = 1f,
+                animationSpec = tween(durationMillis = 560, easing = FastOutSlowInEasing)
+            )
+        }
+        launch {
+            delay(400.milliseconds)
+            footerProgress.animateTo(
+                targetValue = 1f,
+                animationSpec = tween(durationMillis = 440, easing = FastOutSlowInEasing)
+            )
+        }
+    }
+
     Surface(
         modifier = modifier.fillMaxSize(),
         color = RedNdaWhite
@@ -90,6 +144,10 @@ fun NdaHomeScreen(
             val topPadding = if (isTabletPortrait) 24.dp else 18.dp
             val bottomPadding = if (isTabletPortrait) 18.dp else 14.dp
             val cardMaxWidth = if (isTabletPortrait) 560.dp else 460.dp
+            val logoOffsetPx = with(LocalDensity.current) { 18.dp.toPx() }
+            val headerOffsetPx = with(LocalDensity.current) { 22.dp.toPx() }
+            val cardOffsetPx = with(LocalDensity.current) { 28.dp.toPx() }
+            val footerOffsetPx = with(LocalDensity.current) { 18.dp.toPx() }
 
             Box(
                 modifier = Modifier
@@ -118,8 +176,14 @@ fun NdaHomeScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     BrandLogo(
-                        state = uiState,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .graphicsLayer {
+                                alpha = logoProgress.value
+                                translationY = logoOffsetPx * (1f - logoProgress.value)
+                                scaleX = 0.97f + (0.03f * logoProgress.value)
+                                scaleY = 0.97f + (0.03f * logoProgress.value)
+                            }
                     )
 
                     Spacer(modifier = Modifier.height(if (isTabletPortrait) 16.dp else 12.dp))
@@ -127,13 +191,27 @@ fun NdaHomeScreen(
                     WelcomeHeader(
                         title = uiState.welcomeTitle,
                         subtitle = uiState.welcomeSubtitle,
-                        modifier = Modifier.widthIn(max = 560.dp)
+                        modifier = Modifier
+                            .widthIn(max = 560.dp)
+                            .graphicsLayer {
+                                alpha = headerProgress.value
+                                translationY = headerOffsetPx * (1f - headerProgress.value)
+                                scaleX = 0.975f + (0.025f * headerProgress.value)
+                                scaleY = 0.975f + (0.025f * headerProgress.value)
+                            }
                     )
 
                     Spacer(modifier = Modifier.height(if (isTabletPortrait) 24.dp else 12.dp))
 
                     NdaOptionCard(
-                        modifier = Modifier.widthIn(max = cardMaxWidth),
+                        modifier = Modifier
+                            .widthIn(max = cardMaxWidth)
+                            .graphicsLayer {
+                                alpha = firstCardProgress.value
+                                translationY = cardOffsetPx * (1f - firstCardProgress.value)
+                                scaleX = 0.965f + (0.035f * firstCardProgress.value)
+                                scaleY = 0.965f + (0.035f * firstCardProgress.value)
+                            },
                         iconRes = R.drawable.ic_document_pen,
                         title = buildAnnotatedString {
                             append(uiState.proceedLineOne)
@@ -153,7 +231,14 @@ fun NdaHomeScreen(
                     Spacer(modifier = Modifier.height(36.dp))
 
                     NdaOptionCard(
-                        modifier = Modifier.widthIn(max = cardMaxWidth),
+                        modifier = Modifier
+                            .widthIn(max = cardMaxWidth)
+                            .graphicsLayer {
+                                alpha = secondCardProgress.value
+                                translationY = cardOffsetPx * (1f - secondCardProgress.value)
+                                scaleX = 0.965f + (0.035f * secondCardProgress.value)
+                                scaleY = 0.965f + (0.035f * secondCardProgress.value)
+                            },
                         iconRes = R.drawable.ic_qr_scan,
                         title = buildAnnotatedString {
                             withStyle(SpanStyle(color = RedNdaRed, fontWeight = FontWeight.ExtraBold)) {
@@ -171,7 +256,10 @@ fun NdaHomeScreen(
                     Spacer(modifier = Modifier.height(if (isTabletPortrait) 36.dp else 12.dp))
 
                     FooterBrand(
-                        label = uiState.logoCaption
+                        modifier = Modifier.graphicsLayer {
+                            alpha = footerProgress.value
+                            translationY = footerOffsetPx * (1f - footerProgress.value)
+                        }
                     )
                     Spacer(modifier = Modifier.height(if (isTabletPortrait) 12.dp else 10.dp))
                 }
@@ -351,44 +439,19 @@ fun TechBackground(
 
 @Composable
 fun BrandLogo(
-    state: HomeUiState,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
-        Text(
-            text = state.logoRed,
-            color = RedNdaRed,
-            style = MaterialTheme.typography.displayMedium.copy(
-                fontWeight = FontWeight.ExtraBold,
-                fontSize = 36.sp,
-                lineHeight = 34.sp,
-                letterSpacing = (-1.2).sp
-            )
-        )
-        Text(
-            text = state.logoBlack,
-            color = RedNdaBlack,
-            style = MaterialTheme.typography.displayMedium.copy(
-                fontWeight = FontWeight.Normal,
-                fontSize = 32.sp,
-                lineHeight = 31.sp,
-                letterSpacing = (-1.0).sp
-            )
-        )
-        Text(
-            text = state.logoRedBottom,
-            color = RedNdaRed,
-            style = MaterialTheme.typography.displayMedium.copy(
-                fontWeight = FontWeight.Bold,
-                fontSize = 32.sp,
-                lineHeight = 31.sp,
-                letterSpacing = (-1.0).sp
-            )
+        Image(
+            painter = painterResource(id = R.drawable.logo_innovation_labs),
+            contentDescription = "RED Innovation Labs",
+            modifier = Modifier.widthIn(max = 340.dp),
+            contentScale = ContentScale.FillWidth
         )
         Spacer(modifier = Modifier.height(6.dp))
         Canvas(
             modifier = Modifier
-                .width(154.dp)
+                .width(176.dp)
                 .height(3.dp)
         ) {
             drawLine(
@@ -400,15 +463,6 @@ fun BrandLogo(
             )
         }
         Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = state.logoCaption,
-            color = RedNdaBlack,
-            style = MaterialTheme.typography.titleMedium.copy(
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 17.sp,
-                letterSpacing = 0.8.sp
-            )
-        )
     }
 }
 
@@ -581,7 +635,6 @@ private fun CardCornerAccent() {
 
 @Composable
 fun FooterBrand(
-    label: String,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -590,22 +643,13 @@ fun FooterBrand(
         verticalAlignment = Alignment.CenterVertically
     ) {
         DecorativeDivider(modifier = Modifier.width(88.dp))
-        Text(
-            text = buildAnnotatedString {
-                withStyle(SpanStyle(color = RedNdaRed, fontWeight = FontWeight.ExtraBold)) {
-                    append("RED ")
-                }
-                withStyle(SpanStyle(color = RedNdaBlack, fontWeight = FontWeight.Bold)) {
-                    append(label.removePrefix("RED "))
-                }
-            },
-            style = MaterialTheme.typography.titleMedium.copy(
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp,
-                letterSpacing = 0.4.sp
-            ),
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(horizontal = 14.dp)
+        Image(
+            painter = painterResource(id = R.drawable.logo_red_automation_black),
+            contentDescription = "RED Automation",
+            modifier = Modifier
+                .padding(horizontal = 14.dp)
+                .widthIn(max = 220.dp),
+            contentScale = ContentScale.FillWidth
         )
         DecorativeDivider(modifier = Modifier.width(88.dp))
     }
