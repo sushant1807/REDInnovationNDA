@@ -56,7 +56,7 @@ import com.redinnovationlabs.redinnovationnda.presentation.theme.RedNdaWhite
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
 
-private const val DEFAULT_IDLE_TIMEOUT_MILLIS = 1 * 60 * 1000L
+private const val DEFAULT_IDLE_TIMEOUT_MILLIS = 15 * 60 * 1000L
 private const val DEFAULT_WARNING_DURATION_SECONDS = 60
 
 @Stable

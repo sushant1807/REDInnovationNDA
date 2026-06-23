@@ -63,4 +63,5 @@
     <string name="offline_waiting">Waiting for network…</string>
 
     <string name="content_description_splash_logo">RED Innovation Experience</string>
+    <string name="idle_attract_tap_hint">Touch anywhere to begin</string>
 </resources>

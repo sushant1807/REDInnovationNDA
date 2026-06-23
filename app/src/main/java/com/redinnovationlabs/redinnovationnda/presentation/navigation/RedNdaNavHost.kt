@@ -16,7 +16,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -29,12 +28,11 @@ import com.redinnovationlabs.redinnovationnda.presentation.screens.InAppWebViewS
 import com.redinnovationlabs.redinnovationnda.presentation.screens.QrCodeScreen
 import com.redinnovationlabs.redinnovationnda.presentation.screens.SplashScreen
 import com.redinnovationlabs.redinnovationnda.presentation.screens.SuccessScreen
-import com.redinnovationlabs.redinnovationnda.presentation.viewmodel.HomeViewModel
 import com.redinnovationlabs.redinnovationnda.presentation.viewmodel.QrCodeViewModel
 import com.redinnovationlabs.redinnovationnda.presentation.viewmodel.RedNdaViewModelFactory
 import com.redinnovationlabs.redinnovationnda.presentation.viewmodel.WebViewViewModel
 
-private const val EXTERNAL_NDA_TIMEOUT_MILLIS = 1 * 60 * 1000L
+private const val EXTERNAL_NDA_TIMEOUT_MILLIS = 15 * 60 * 1000L
 
 @Composable
 fun RedNdaNavHost(
@@ -85,10 +83,7 @@ fun RedNdaNavHost(
             )
         }
         composable(RedNdaRoute.Home.route) {
-            val viewModel: HomeViewModel = viewModel(factory = viewModelFactory)
-            val uiState = viewModel.uiState.collectAsStateWithLifecycle()
             HomeScreen(
-                uiState = uiState.value,
                 onProceedClick = {
                     val didLaunch = openNdaFormExternally(
                         context = context,
@@ -116,7 +111,9 @@ fun RedNdaNavHost(
             val viewModel: QrCodeViewModel = viewModel(factory = viewModelFactory)
             QrCodeScreen(
                 uiState = viewModel.uiState,
-                onBack = { navController.popBackStack() },
+                onBack = {
+                    navController.popBackStack(RedNdaRoute.Home.route, inclusive = false)
+                },
                 onTimeoutHome = {
                     navController.popBackStack(RedNdaRoute.Home.route, inclusive = false)
                 }

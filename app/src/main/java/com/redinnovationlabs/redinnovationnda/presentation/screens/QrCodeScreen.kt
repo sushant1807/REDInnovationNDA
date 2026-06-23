@@ -28,6 +28,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -68,11 +72,14 @@ fun QrCodeScreen(
     val context = LocalContext.current
     val idleTimeoutController = rememberIdleTimeoutController(onTimeout = onTimeoutHome)
     val chooserTitle = stringResource(R.string.share_nda_link_chooser_title)
+    var hasHandledBack by remember { mutableStateOf(false) }
 
     QrCodeScreenContent(
         state = uiState,
         idleTimeoutController = idleTimeoutController,
         onBack = {
+            if (hasHandledBack) return@QrCodeScreenContent
+            hasHandledBack = true
             idleTimeoutController.registerInteraction()
             onBack()
         },
@@ -152,7 +159,7 @@ private fun QrCodeScreenContent(
                     onClick = onBack,
                     modifier = Modifier
                         .align(Alignment.TopStart)
-                        .padding(start = horizontalPadding - 8.dp, top = 20.dp)
+                        .padding(start = horizontalPadding - 8.dp, top = 42.dp)
                         .background(RedNdaWhite.copy(alpha = 0.92f), CircleShape)
                 ) {
                     Icon(

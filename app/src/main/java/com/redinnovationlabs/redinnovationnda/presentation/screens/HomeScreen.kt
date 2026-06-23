@@ -49,6 +49,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -63,6 +64,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.redinnovationlabs.redinnovationnda.R
+import com.redinnovationlabs.redinnovationnda.presentation.components.IdleAttractOverlay
 import com.redinnovationlabs.redinnovationnda.presentation.components.RedPrimaryButton
 import com.redinnovationlabs.redinnovationnda.presentation.theme.RedNdaBlack
 import com.redinnovationlabs.redinnovationnda.presentation.theme.RedNdaBorderGray
@@ -73,22 +75,21 @@ import com.redinnovationlabs.redinnovationnda.presentation.theme.RedNdaRed
 import com.redinnovationlabs.redinnovationnda.presentation.theme.RedNdaRedDark
 import com.redinnovationlabs.redinnovationnda.presentation.theme.RedNdaTheme
 import com.redinnovationlabs.redinnovationnda.presentation.theme.RedNdaWhite
-import com.redinnovationlabs.redinnovationnda.presentation.viewmodel.model.HomeUiState
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
 
+private const val HOME_ATTRACT_IDLE_MILLIS = 15 * 60 * 1000L
+
 @Composable
 fun HomeScreen(
-    uiState: HomeUiState,
     onProceedClick: () -> Unit,
     onScanClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     NdaHomeScreen(
-        uiState = uiState,
         onProceedClick = onProceedClick,
         onScanClick = onScanClick,
         modifier = modifier
@@ -97,7 +98,6 @@ fun HomeScreen(
 
 @Composable
 fun NdaHomeScreen(
-    uiState: HomeUiState,
     onProceedClick: () -> Unit,
     onScanClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -111,7 +111,13 @@ fun NdaHomeScreen(
     val footerProgress = remember { Animatable(0f) }
     var animationCycle by rememberSaveable { mutableIntStateOf(0) }
     var appWasBackgrounded by rememberSaveable { mutableStateOf(false) }
+    var isAttractVisible by rememberSaveable { mutableStateOf(false) }
+    var attractTimerCycle by rememberSaveable { mutableIntStateOf(0) }
     val latestBumpAnimationCycle = rememberUpdatedState(newValue = { animationCycle += 1 })
+    val dismissAttractAndResetTimer = {
+        isAttractVisible = false
+        attractTimerCycle += 1
+    }
 
     DisposableEffect(activity) {
         val hostActivity = activity ?: return@DisposableEffect onDispose { }
@@ -184,6 +190,11 @@ fun NdaHomeScreen(
         }
     }
 
+    LaunchedEffect(attractTimerCycle) {
+        delay(HOME_ATTRACT_IDLE_MILLIS.milliseconds)
+        isAttractVisible = true
+    }
+
     Surface(
         modifier = modifier.fillMaxSize(),
         color = RedNdaWhite
@@ -204,6 +215,10 @@ fun NdaHomeScreen(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
+                    .pointerInteropFilter {
+                        dismissAttractAndResetTimer()
+                        false
+                    }
                     .background(
                         brush = Brush.verticalGradient(
                             colors = listOf(
@@ -282,7 +297,10 @@ fun NdaHomeScreen(
                         description = stringResource(R.string.home_proceed_description),
                         buttonText = stringResource(R.string.home_proceed_button),
                         buttonIconRes = R.drawable.ic_arrow_right,
-                        onClick = onProceedClick
+                        onClick = {
+                            dismissAttractAndResetTimer()
+                            onProceedClick()
+                        }
                     )
 
                     Spacer(modifier = Modifier.height(36.dp))
@@ -312,7 +330,10 @@ fun NdaHomeScreen(
                         description = stringResource(R.string.home_scan_description),
                         buttonText = stringResource(R.string.home_scan_button),
                         buttonIconRes = R.drawable.ic_qr_small,
-                        onClick = onScanClick
+                        onClick = {
+                            dismissAttractAndResetTimer()
+                            onScanClick()
+                        }
                     )
 
                     Spacer(modifier = Modifier.height(if (isTabletPortrait) 36.dp else 12.dp))
@@ -325,6 +346,11 @@ fun NdaHomeScreen(
                     )
                     Spacer(modifier = Modifier.height(if (isTabletPortrait) 12.dp else 10.dp))
                 }
+
+                IdleAttractOverlay(
+                    visible = isAttractVisible,
+                    onDismiss = dismissAttractAndResetTimer
+                )
             }
         }
     }
@@ -756,7 +782,6 @@ private fun DecorativeDivider(
 private fun NdaHomeScreenPreview() {
     RedNdaTheme {
         NdaHomeScreen(
-            uiState = HomeUiState(),
             onProceedClick = {},
             onScanClick = {}
         )
