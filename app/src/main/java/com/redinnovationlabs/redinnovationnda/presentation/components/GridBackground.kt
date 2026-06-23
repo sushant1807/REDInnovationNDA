@@ -42,11 +42,26 @@ fun GridBackground(
         }
 
         val scratches = listOf(
-            Offset(size.width * 0.10f, size.height * 0.12f) to Offset(size.width * 0.48f, size.height * 0.18f),
-            Offset(size.width * 0.18f, size.height * 0.58f) to Offset(size.width * 0.72f, size.height * 0.67f),
-            Offset(size.width * 0.52f, size.height * 0.06f) to Offset(size.width * 0.84f, size.height * 0.18f),
-            Offset(size.width * 0.66f, size.height * 0.36f) to Offset(size.width * 0.98f, size.height * 0.42f),
-            Offset(size.width * 0.06f, size.height * 0.82f) to Offset(size.width * 0.38f, size.height * 0.92f)
+            Offset(size.width * 0.10f, size.height * 0.12f) to Offset(
+                size.width * 0.48f,
+                size.height * 0.18f
+            ),
+            Offset(size.width * 0.18f, size.height * 0.58f) to Offset(
+                size.width * 0.72f,
+                size.height * 0.67f
+            ),
+            Offset(size.width * 0.52f, size.height * 0.06f) to Offset(
+                size.width * 0.84f,
+                size.height * 0.18f
+            ),
+            Offset(size.width * 0.66f, size.height * 0.36f) to Offset(
+                size.width * 0.98f,
+                size.height * 0.42f
+            ),
+            Offset(size.width * 0.06f, size.height * 0.82f) to Offset(
+                size.width * 0.38f,
+                size.height * 0.92f
+            )
         )
 
         scratches.forEachIndexed { index, (start, end) ->

@@ -42,10 +42,12 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.redinnovationlabs.redinnovationnda.R
 import com.redinnovationlabs.redinnovationnda.presentation.theme.RedNdaBlack
 import com.redinnovationlabs.redinnovationnda.presentation.theme.RedNdaBorderGray
 import com.redinnovationlabs.redinnovationnda.presentation.theme.RedNdaLightGray
@@ -201,7 +203,7 @@ fun IdleTimeoutOverlay(
                                 )
                             )
                             Text(
-                                text = "SECONDS",
+                                text = stringResource(R.string.idle_seconds_label),
                                 color = RedNdaRed,
                                 style = MaterialTheme.typography.labelLarge.copy(
                                     fontWeight = FontWeight.Bold,
@@ -214,7 +216,7 @@ fun IdleTimeoutOverlay(
                     Spacer(modifier = Modifier.height(18.dp))
 
                     Text(
-                        text = "SESSION ENDING SOON",
+                        text = stringResource(R.string.idle_title),
                         color = RedNdaBlack,
                         style = MaterialTheme.typography.titleLarge.copy(
                             fontWeight = FontWeight.ExtraBold,
@@ -242,7 +244,7 @@ fun IdleTimeoutOverlay(
                     Spacer(modifier = Modifier.height(14.dp))
 
                     Text(
-                        text = "For privacy, this screen will return to Home after 1 minute of no activity.",
+                        text = stringResource(R.string.idle_message),
                         color = RedNdaBlack.copy(alpha = 0.84f),
                         style = MaterialTheme.typography.bodyLarge.copy(
                             lineHeight = 23.sp
@@ -253,7 +255,7 @@ fun IdleTimeoutOverlay(
                     Spacer(modifier = Modifier.height(22.dp))
 
                     RedPrimaryButton(
-                        text = "STAY ON THIS SCREEN",
+                        text = stringResource(R.string.idle_stay_button),
                         onClick = onStayActive
                     )
 
@@ -264,13 +266,13 @@ fun IdleTimeoutOverlay(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "Prefer to leave now?",
+                            text = stringResource(R.string.idle_leave_prompt),
                             color = RedNdaBlack.copy(alpha = 0.64f),
                             style = MaterialTheme.typography.bodyMedium
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
-                            text = "RETURN HOME",
+                            text = stringResource(R.string.idle_return_home),
                             color = RedNdaRed,
                             style = MaterialTheme.typography.bodyMedium.copy(
                                 fontWeight = FontWeight.Bold,

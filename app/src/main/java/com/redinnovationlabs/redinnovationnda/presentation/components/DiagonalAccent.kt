@@ -33,6 +33,7 @@ fun DiagonalAccent(
                     lineTo(0f, size.height)
                     close()
                 }
+
                 DiagonalAccentPosition.BottomStart -> {
                     moveTo(0f, 0f)
                     lineTo(size.width * 0.55f, 0f)

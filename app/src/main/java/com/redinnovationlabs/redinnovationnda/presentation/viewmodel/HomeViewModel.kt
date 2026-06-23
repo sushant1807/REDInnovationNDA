@@ -9,12 +9,4 @@ import com.redinnovationlabs.redinnovationnda.presentation.viewmodel.model.HomeU
 class HomeViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
-
-    fun showHelpDialog() {
-        _uiState.value = _uiState.value.copy(showHelpDialog = true)
-    }
-
-    fun dismissHelpDialog() {
-        _uiState.value = _uiState.value.copy(showHelpDialog = false)
-    }
 }

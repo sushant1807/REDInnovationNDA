@@ -8,8 +8,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.redinnovationlabs.redinnovationnda.R
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
 import com.google.zxing.qrcode.QRCodeWriter
@@ -27,7 +29,7 @@ fun QrCodeImage(
 
     Image(
         bitmap = bitmap.asImageBitmap(),
-        contentDescription = "QR code",
+        contentDescription = stringResource(R.string.content_description_qr_code),
         modifier = modifier.size(size)
     )
 }

@@ -1,11 +1,13 @@
 package com.redinnovationlabs.redinnovationnda.presentation.screens
 
+import androidx.activity.ComponentActivity
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -28,8 +30,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -41,8 +50,10 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -63,6 +74,8 @@ import com.redinnovationlabs.redinnovationnda.presentation.theme.RedNdaRedDark
 import com.redinnovationlabs.redinnovationnda.presentation.theme.RedNdaTheme
 import com.redinnovationlabs.redinnovationnda.presentation.theme.RedNdaWhite
 import com.redinnovationlabs.redinnovationnda.presentation.viewmodel.model.HomeUiState
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
@@ -89,13 +102,52 @@ fun NdaHomeScreen(
     onScanClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
+    val activity = context as? ComponentActivity
     val logoProgress = remember { Animatable(0f) }
     val headerProgress = remember { Animatable(0f) }
     val firstCardProgress = remember { Animatable(0f) }
     val secondCardProgress = remember { Animatable(0f) }
     val footerProgress = remember { Animatable(0f) }
+    var animationCycle by rememberSaveable { mutableIntStateOf(0) }
+    var appWasBackgrounded by rememberSaveable { mutableStateOf(false) }
+    val latestBumpAnimationCycle = rememberUpdatedState(newValue = { animationCycle += 1 })
 
-    LaunchedEffect(Unit) {
+    DisposableEffect(activity) {
+        val hostActivity = activity ?: return@DisposableEffect onDispose { }
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_STOP -> {
+                    appWasBackgrounded = true
+                }
+
+                Lifecycle.Event.ON_START -> {
+                    if (appWasBackgrounded) {
+                        appWasBackgrounded = false
+                        latestBumpAnimationCycle.value()
+                    }
+                }
+
+                Lifecycle.Event.ON_DESTROY -> {
+                    appWasBackgrounded = false
+                }
+
+                else -> Unit
+            }
+        }
+        hostActivity.lifecycle.addObserver(observer)
+        onDispose {
+            hostActivity.lifecycle.removeObserver(observer)
+        }
+    }
+
+    LaunchedEffect(animationCycle) {
+        logoProgress.snapTo(0f)
+        headerProgress.snapTo(0f)
+        firstCardProgress.snapTo(0f)
+        secondCardProgress.snapTo(0f)
+        footerProgress.snapTo(0f)
+
         launch {
             logoProgress.animateTo(
                 targetValue = 1f,
@@ -141,7 +193,7 @@ fun NdaHomeScreen(
         ) {
             val isTabletPortrait = maxWidth >= 600.dp
             val horizontalPadding = if (isTabletPortrait) 32.dp else 22.dp
-            val topPadding = if (isTabletPortrait) 24.dp else 18.dp
+            val topPadding = if (isTabletPortrait) 44.dp else 32.dp
             val bottomPadding = if (isTabletPortrait) 18.dp else 14.dp
             val cardMaxWidth = if (isTabletPortrait) 560.dp else 460.dp
             val logoOffsetPx = with(LocalDensity.current) { 18.dp.toPx() }
@@ -189,8 +241,8 @@ fun NdaHomeScreen(
                     Spacer(modifier = Modifier.height(if (isTabletPortrait) 16.dp else 12.dp))
 
                     WelcomeHeader(
-                        title = uiState.welcomeTitle,
-                        subtitle = uiState.welcomeSubtitle,
+                        title = stringResource(R.string.home_welcome_title),
+                        subtitle = stringResource(R.string.home_welcome_subtitle),
                         modifier = Modifier
                             .widthIn(max = 560.dp)
                             .graphicsLayer {
@@ -214,16 +266,21 @@ fun NdaHomeScreen(
                             },
                         iconRes = R.drawable.ic_document_pen,
                         title = buildAnnotatedString {
-                            append(uiState.proceedLineOne)
+                            append(stringResource(R.string.home_proceed_line_one))
                             append("\n")
-                            withStyle(SpanStyle(color = RedNdaRed, fontWeight = FontWeight.ExtraBold)) {
-                                append(uiState.proceedAccent)
+                            withStyle(
+                                SpanStyle(
+                                    color = RedNdaRed,
+                                    fontWeight = FontWeight.ExtraBold
+                                )
+                            ) {
+                                append(stringResource(R.string.home_proceed_accent))
                             }
                             append(" ")
-                            append(uiState.proceedLineTwo)
+                            append(stringResource(R.string.home_proceed_line_two))
                         },
-                        description = uiState.proceedDescription,
-                        buttonText = uiState.proceedButtonText,
+                        description = stringResource(R.string.home_proceed_description),
+                        buttonText = stringResource(R.string.home_proceed_button),
                         buttonIconRes = R.drawable.ic_arrow_right,
                         onClick = onProceedClick
                     )
@@ -241,14 +298,19 @@ fun NdaHomeScreen(
                             },
                         iconRes = R.drawable.ic_qr_scan,
                         title = buildAnnotatedString {
-                            withStyle(SpanStyle(color = RedNdaRed, fontWeight = FontWeight.ExtraBold)) {
-                                append(uiState.scanAccent)
+                            withStyle(
+                                SpanStyle(
+                                    color = RedNdaRed,
+                                    fontWeight = FontWeight.ExtraBold
+                                )
+                            ) {
+                                append(stringResource(R.string.home_scan_accent))
                             }
                             append(" ")
-                            append(uiState.scanLineTwo)
+                            append(stringResource(R.string.home_scan_line_two))
                         },
-                        description = uiState.scanDescription,
-                        buttonText = uiState.scanButtonText,
+                        description = stringResource(R.string.home_scan_description),
+                        buttonText = stringResource(R.string.home_scan_button),
                         buttonIconRes = R.drawable.ic_qr_small,
                         onClick = onScanClick
                     )
@@ -444,7 +506,7 @@ fun BrandLogo(
     Column(modifier = modifier) {
         Image(
             painter = painterResource(id = R.drawable.logo_innovation_labs),
-            contentDescription = "RED Innovation Labs",
+            contentDescription = stringResource(R.string.content_description_red_innovation_labs),
             modifier = Modifier.widthIn(max = 340.dp),
             contentScale = ContentScale.FillWidth
         )
@@ -526,7 +588,8 @@ fun NdaOptionCard(
 ) {
     Card(
         modifier = modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .clickable(onClick = onClick),
         shape = RoundedCornerShape(20.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 12.dp),
         colors = CardDefaults.cardColors(containerColor = RedNdaWhite)
@@ -645,7 +708,7 @@ fun FooterBrand(
         DecorativeDivider(modifier = Modifier.width(88.dp))
         Image(
             painter = painterResource(id = R.drawable.logo_red_automation_black),
-            contentDescription = "RED Automation",
+            contentDescription = stringResource(R.string.content_description_red_automation),
             modifier = Modifier
                 .padding(horizontal = 14.dp)
                 .widthIn(max = 220.dp),

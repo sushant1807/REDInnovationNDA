@@ -16,9 +16,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.redinnovationlabs.redinnovationnda.R
 import com.redinnovationlabs.redinnovationnda.presentation.components.DiagonalAccent
 import com.redinnovationlabs.redinnovationnda.presentation.components.DiagonalAccentPosition
 import com.redinnovationlabs.redinnovationnda.presentation.components.GridBackground
@@ -55,30 +57,32 @@ fun SuccessScreen(
                 modifier = Modifier.padding(bottom = 18.dp)
             )
             Text(
-                text = "THANK YOU!",
+                text = stringResource(R.string.success_title),
                 style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.ExtraBold),
                 color = RedNdaBlack,
                 textAlign = TextAlign.Center
             )
             Spacer(modifier = Modifier.height(12.dp))
             Text(
-                text = "Your NDA has been submitted successfully.",
+                text = stringResource(R.string.success_message_submitted),
                 style = MaterialTheme.typography.bodyLarge,
                 color = RedNdaBlack,
                 textAlign = TextAlign.Center
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "You may now close this screen.",
+                text = stringResource(R.string.success_message_close),
                 style = MaterialTheme.typography.bodyLarge,
                 color = RedNdaBlack,
                 textAlign = TextAlign.Center
             )
             Spacer(modifier = Modifier.height(30.dp))
             RedPrimaryButton(
-                text = "DONE",
+                text = stringResource(R.string.success_done_button),
                 onClick = onDone,
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 52.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 52.dp)
             )
         }
     }

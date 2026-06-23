@@ -16,9 +16,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.redinnovationlabs.redinnovationnda.R
 import com.redinnovationlabs.redinnovationnda.presentation.components.DiagonalAccent
 import com.redinnovationlabs.redinnovationnda.presentation.components.DiagonalAccentPosition
 import com.redinnovationlabs.redinnovationnda.presentation.components.GridBackground
@@ -31,9 +33,11 @@ import com.redinnovationlabs.redinnovationnda.presentation.theme.RedNdaRed
 fun ErrorScreen(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
-    message: String = "Something went wrong.",
+    message: String? = null,
     onRetry: (() -> Unit)? = null,
 ) {
+    val resolvedMessage = message ?: stringResource(R.string.generic_error_message)
+
     Box(modifier = modifier.fillMaxSize()) {
         GridBackground()
         DiagonalAccent(
@@ -57,14 +61,14 @@ fun ErrorScreen(
                 modifier = Modifier.padding(bottom = 18.dp)
             )
             Text(
-                text = "ERROR",
+                text = stringResource(R.string.generic_error_title),
                 style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.ExtraBold),
                 color = RedNdaBlack,
                 textAlign = TextAlign.Center
             )
             Spacer(modifier = Modifier.height(12.dp))
             Text(
-                text = message,
+                text = resolvedMessage,
                 style = MaterialTheme.typography.bodyLarge,
                 color = RedNdaBlack,
                 textAlign = TextAlign.Center
@@ -72,16 +76,20 @@ fun ErrorScreen(
             Spacer(modifier = Modifier.height(30.dp))
             if (onRetry != null) {
                 RedPrimaryButton(
-                    text = "RETRY",
+                    text = stringResource(R.string.generic_retry_button),
                     onClick = onRetry,
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 52.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 52.dp)
                 )
                 Spacer(modifier = Modifier.height(14.dp))
             }
             RedPrimaryButton(
-                text = "GO BACK",
+                text = stringResource(R.string.generic_go_back_button),
                 onClick = onBack,
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 52.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 52.dp)
             )
         }
     }

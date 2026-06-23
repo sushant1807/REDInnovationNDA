@@ -46,7 +46,12 @@ fun RedNdaNavHost(
     var externalNdaLaunchAt by remember { mutableLongStateOf(0L) }
     var isAwaitingExternalNdaReturn by remember { mutableStateOf(false) }
 
-    DisposableEffect(lifecycleOwner, navController, isAwaitingExternalNdaReturn, externalNdaLaunchAt) {
+    DisposableEffect(
+        lifecycleOwner,
+        navController,
+        isAwaitingExternalNdaReturn,
+        externalNdaLaunchAt
+    ) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME && isAwaitingExternalNdaReturn) {
                 val elapsed = SystemClock.elapsedRealtime() - externalNdaLaunchAt

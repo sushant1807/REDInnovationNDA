@@ -34,6 +34,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.redinnovationlabs.redinnovationnda.R
@@ -163,7 +164,7 @@ fun SplashScreen(
                             ) {
                                 Image(
                                     painter = painterResource(id = R.drawable.logo_innovation_labs),
-                                    contentDescription = "RED Innovation Experience",
+                                    contentDescription = stringResource(R.string.content_description_splash_logo),
                                     modifier = Modifier.fillMaxWidth(),
                                     contentScale = ContentScale.FillWidth
                                 )
@@ -177,8 +178,14 @@ fun SplashScreen(
                                                 Color.Transparent
                                             )
                                         ),
-                                        topLeft = Offset(size.width * accentProgress.value - size.width * 0.38f, 0f),
-                                        size = androidx.compose.ui.geometry.Size(size.width * 0.34f, size.height),
+                                        topLeft = Offset(
+                                            size.width * accentProgress.value - size.width * 0.38f,
+                                            0f
+                                        ),
+                                        size = androidx.compose.ui.geometry.Size(
+                                            size.width * 0.34f,
+                                            size.height
+                                        ),
                                         blendMode = BlendMode.Screen
                                     )
                                 }

@@ -1,3 +1,66 @@
 <resources>
     <string name="app_name">RED NDA App</string>
+    <string name="nda_webform_title">Complete NDA</string>
+    <string name="nda_share_subject">RED NDA App</string>
+    <string name="nda_share_message_prefix">Use this secure DocuSign WebForm link to complete the NDA:\n</string>
+    <string name="share_nda_link_chooser_title">Share NDA link</string>
+
+    <string name="home_welcome_title">Welcome</string>
+    <string name="home_welcome_subtitle">Please choose how you want to complete the NDA.</string>
+    <string name="home_proceed_line_one">PROCEED WITH</string>
+    <string name="home_proceed_accent">NDA</string>
+    <string name="home_proceed_line_two">HERE</string>
+    <string name="home_proceed_description">Fill in your details, review and sign the NDA on this device.</string>
+    <string name="home_proceed_button">START NDA</string>
+    <string name="home_scan_accent">SCAN</string>
+    <string name="home_scan_line_two">HERE</string>
+    <string name="home_scan_description">Scan the QR code and complete the NDA on your phone.</string>
+    <string name="home_scan_button">SHOW QR CODE</string>
+    <string name="content_description_red_innovation_labs">RED Innovation Labs</string>
+    <string name="content_description_red_automation">RED Automation</string>
+
+    <string name="qr_title">SCAN HERE</string>
+    <string name="qr_subtitle">Scan the QR code and complete the NDA on your phone.</string>
+    <string name="qr_share_button">SHARE LINK</string>
+    <string name="qr_footer_prefix">Need help?</string>
+    <string name="qr_footer_action">Contact staff</string>
+    <string name="content_description_back">Back</string>
+    <string name="content_description_qr_code">QR code</string>
+
+    <string name="webview_retry_button">RETRY</string>
+    <string name="webview_back_button">GO BACK</string>
+    <string name="webview_open_secure_form">OPEN SECURE FORM</string>
+    <string name="webview_loading_progress">Loading NDA form %1$d%%</string>
+    <string name="webview_timeout_error">The NDA form is taking too long to load in WebView. Please try again.</string>
+    <string name="webview_incompatible_error">This device\'s Android WebView is not compatible with the DocuSign form. Open the secure form in a browser tab or update Android System WebView/Chrome.</string>
+    <string name="webview_unsupported_link_error">This DocuSign step requested an unsupported link: %1$s</string>
+    <string name="webview_load_error">Unable to load the NDA form.</string>
+    <string name="webview_http_error">The NDA form returned an HTTP %1$s response.</string>
+    <string name="webview_unknown_http_status">error</string>
+    <string name="webview_unavailable_error">Android System WebView is unavailable on this device. Open the secure form in a browser tab.</string>
+    <string name="webview_too_old_error">This device is using Android System WebView %1$d, which is too old for the DocuSign form. Open the secure form in a browser tab or update Android System WebView/Chrome.</string>
+    <string name="webview_preview_error">Unable to connect to the DocuSign WebForm. Please check the connection and try again.</string>
+
+    <string name="generic_error_title">ERROR</string>
+    <string name="generic_error_message">Something went wrong.</string>
+    <string name="generic_retry_button">RETRY</string>
+    <string name="generic_go_back_button">GO BACK</string>
+
+    <string name="success_title">THANK YOU!</string>
+    <string name="success_message_submitted">Your NDA has been submitted successfully.</string>
+    <string name="success_message_close">You may now close this screen.</string>
+    <string name="success_done_button">DONE</string>
+
+    <string name="idle_seconds_label">SECONDS</string>
+    <string name="idle_title">SESSION ENDING SOON</string>
+    <string name="idle_message">For privacy, this screen will return to Home after 1 minute of no activity.</string>
+    <string name="idle_stay_button">STAY ON THIS SCREEN</string>
+    <string name="idle_leave_prompt">Prefer to leave now?</string>
+    <string name="idle_return_home">RETURN HOME</string>
+
+    <string name="offline_title">NO INTERNET CONNECTION</string>
+    <string name="offline_message">Please connect this tablet to the internet. We will continue automatically once the connection is restored.</string>
+    <string name="offline_waiting">Waiting for network…</string>
+
+    <string name="content_description_splash_logo">RED Innovation Experience</string>
 </resources>

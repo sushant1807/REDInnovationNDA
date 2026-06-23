@@ -42,6 +42,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import com.redinnovationlabs.redinnovationnda.R
 import com.redinnovationlabs.redinnovationnda.data.constants.DocuSignConstants
 import com.redinnovationlabs.redinnovationnda.domain.model.NdaFormLink
 import com.redinnovationlabs.redinnovationnda.presentation.components.QrCodeImage
@@ -65,6 +67,7 @@ fun QrCodeScreen(
 ) {
     val context = LocalContext.current
     val idleTimeoutController = rememberIdleTimeoutController(onTimeout = onTimeoutHome)
+    val chooserTitle = stringResource(R.string.share_nda_link_chooser_title)
 
     QrCodeScreenContent(
         state = uiState,
@@ -83,7 +86,7 @@ fun QrCodeScreen(
                     "${uiState.formLink.shareMessagePrefix}${uiState.formLink.url}"
                 )
             }
-            context.startActivity(Intent.createChooser(sendIntent, "Share NDA link"))
+            context.startActivity(Intent.createChooser(sendIntent, chooserTitle))
         },
         onTimeoutHome = onTimeoutHome,
         modifier = modifier
@@ -154,7 +157,7 @@ private fun QrCodeScreenContent(
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                        contentDescription = "Back",
+                        contentDescription = stringResource(R.string.content_description_back),
                         tint = RedNdaBlack
                     )
                 }
@@ -171,7 +174,7 @@ private fun QrCodeScreenContent(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = state.title,
+                            text = stringResource(R.string.qr_title),
                             color = RedNdaBlack,
                             style = MaterialTheme.typography.headlineLarge.copy(
                                 fontWeight = FontWeight.ExtraBold,
@@ -184,7 +187,7 @@ private fun QrCodeScreenContent(
                         TitleUnderline()
                         Spacer(modifier = Modifier.height(18.dp))
                         Text(
-                            text = state.subtitle,
+                            text = stringResource(R.string.qr_subtitle),
                             color = RedNdaBlack,
                             style = MaterialTheme.typography.bodyLarge.copy(
                                 fontSize = if (isLargePortrait) 18.sp else 16.sp,
@@ -208,7 +211,7 @@ private fun QrCodeScreenContent(
                         Spacer(modifier = Modifier.height(28.dp))
 
                         RedPrimaryButton(
-                            text = state.shareButtonText,
+                            text = stringResource(R.string.qr_share_button),
                             onClick = onShare,
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -286,11 +289,26 @@ private fun QrBackdrop(
         }
 
         val scratches = listOf(
-            Pair(Offset(size.width * 0.08f, size.height * 0.10f), Offset(size.width * 0.28f, size.height * 0.18f)),
-            Pair(Offset(size.width * 0.62f, size.height * 0.08f), Offset(size.width * 0.90f, size.height * 0.18f)),
-            Pair(Offset(size.width * 0.14f, size.height * 0.66f), Offset(size.width * 0.34f, size.height * 0.72f)),
-            Pair(Offset(size.width * 0.66f, size.height * 0.74f), Offset(size.width * 0.90f, size.height * 0.82f)),
-            Pair(Offset(size.width * 0.76f, size.height * 0.32f), Offset(size.width * 0.96f, size.height * 0.44f))
+            Pair(
+                Offset(size.width * 0.08f, size.height * 0.10f),
+                Offset(size.width * 0.28f, size.height * 0.18f)
+            ),
+            Pair(
+                Offset(size.width * 0.62f, size.height * 0.08f),
+                Offset(size.width * 0.90f, size.height * 0.18f)
+            ),
+            Pair(
+                Offset(size.width * 0.14f, size.height * 0.66f),
+                Offset(size.width * 0.34f, size.height * 0.72f)
+            ),
+            Pair(
+                Offset(size.width * 0.66f, size.height * 0.74f),
+                Offset(size.width * 0.90f, size.height * 0.82f)
+            ),
+            Pair(
+                Offset(size.width * 0.76f, size.height * 0.32f),
+                Offset(size.width * 0.96f, size.height * 0.44f)
+            )
         )
 
         scratches.forEachIndexed { index, (start, end) ->
@@ -377,17 +395,65 @@ private fun QrCornerFrame(
         val strokeWidth = 8.dp.toPx()
         val color = RedNdaRed
 
-        drawLine(color, Offset(inset, inset + arm), Offset(inset, inset), strokeWidth, cap = StrokeCap.Square)
-        drawLine(color, Offset(inset, inset), Offset(inset + arm, inset), strokeWidth, cap = StrokeCap.Square)
+        drawLine(
+            color,
+            Offset(inset, inset + arm),
+            Offset(inset, inset),
+            strokeWidth,
+            cap = StrokeCap.Square
+        )
+        drawLine(
+            color,
+            Offset(inset, inset),
+            Offset(inset + arm, inset),
+            strokeWidth,
+            cap = StrokeCap.Square
+        )
 
-        drawLine(color, Offset(size.width - inset - arm, inset), Offset(size.width - inset, inset), strokeWidth, cap = StrokeCap.Square)
-        drawLine(color, Offset(size.width - inset, inset), Offset(size.width - inset, inset + arm), strokeWidth, cap = StrokeCap.Square)
+        drawLine(
+            color,
+            Offset(size.width - inset - arm, inset),
+            Offset(size.width - inset, inset),
+            strokeWidth,
+            cap = StrokeCap.Square
+        )
+        drawLine(
+            color,
+            Offset(size.width - inset, inset),
+            Offset(size.width - inset, inset + arm),
+            strokeWidth,
+            cap = StrokeCap.Square
+        )
 
-        drawLine(color, Offset(inset, size.height - inset - arm), Offset(inset, size.height - inset), strokeWidth, cap = StrokeCap.Square)
-        drawLine(color, Offset(inset, size.height - inset), Offset(inset + arm, size.height - inset), strokeWidth, cap = StrokeCap.Square)
+        drawLine(
+            color,
+            Offset(inset, size.height - inset - arm),
+            Offset(inset, size.height - inset),
+            strokeWidth,
+            cap = StrokeCap.Square
+        )
+        drawLine(
+            color,
+            Offset(inset, size.height - inset),
+            Offset(inset + arm, size.height - inset),
+            strokeWidth,
+            cap = StrokeCap.Square
+        )
 
-        drawLine(color, Offset(size.width - inset - arm, size.height - inset), Offset(size.width - inset, size.height - inset), strokeWidth, cap = StrokeCap.Square)
-        drawLine(color, Offset(size.width - inset, size.height - inset - arm), Offset(size.width - inset, size.height - inset), strokeWidth, cap = StrokeCap.Square)
+        drawLine(
+            color,
+            Offset(size.width - inset - arm, size.height - inset),
+            Offset(size.width - inset, size.height - inset),
+            strokeWidth,
+            cap = StrokeCap.Square
+        )
+        drawLine(
+            color,
+            Offset(size.width - inset, size.height - inset - arm),
+            Offset(size.width - inset, size.height - inset),
+            strokeWidth,
+            cap = StrokeCap.Square
+        )
     }
 }
 
@@ -474,9 +540,9 @@ private fun QrCodeScreenPreview() {
     val previewState = QrCodeUiState(
         formLink = NdaFormLink(
             url = DocuSignConstants.NDA_WEBFORM_URL,
-            title = "Complete NDA",
-            shareSubject = "RED NDA App",
-            shareMessagePrefix = "Use this secure DocuSign WebForm link to complete the NDA:\n"
+            title = stringResource(R.string.nda_webform_title),
+            shareSubject = stringResource(R.string.nda_share_subject),
+            shareMessagePrefix = stringResource(R.string.nda_share_message_prefix)
         )
     )
 

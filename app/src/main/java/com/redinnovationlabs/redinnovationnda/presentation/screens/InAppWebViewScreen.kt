@@ -55,6 +55,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -63,6 +64,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.redinnovationlabs.redinnovationnda.R
 import com.redinnovationlabs.redinnovationnda.data.constants.DocuSignConstants
 import com.redinnovationlabs.redinnovationnda.domain.model.NdaFormLink
 import com.redinnovationlabs.redinnovationnda.presentation.components.RedPrimaryButton
@@ -90,8 +92,23 @@ fun InAppWebViewScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     var webViewRef by remember { mutableStateOf<WebView?>(null) }
     val webViewSupport = remember { evaluateWebViewSupport() }
-    val resolvedErrorMessage = state.errorMessage ?: webViewSupport.unsupportedReason
+    val resolvedUnsupportedReason = when (webViewSupport.unsupportedReason) {
+        WebViewUnsupportedReason.Unavailable -> stringResource(R.string.webview_unavailable_error)
+        WebViewUnsupportedReason.TooOld -> stringResource(
+            R.string.webview_too_old_error,
+            webViewSupport.majorVersion ?: 0
+        )
+
+        null -> null
+    }
+    val resolvedErrorMessage = state.errorMessage ?: resolvedUnsupportedReason
     val idleTimeoutController = rememberIdleTimeoutController(onTimeout = onTimeoutHome)
+    val timeoutError = stringResource(R.string.webview_timeout_error)
+    val incompatibleError = stringResource(R.string.webview_incompatible_error)
+    val loadError = stringResource(R.string.webview_load_error)
+    val unsupportedLinkError = stringResource(R.string.webview_unsupported_link_error)
+    val httpError = stringResource(R.string.webview_http_error)
+    val unknownHttpStatus = stringResource(R.string.webview_unknown_http_status)
 
     BackHandler {
         val webView = webViewRef
@@ -145,7 +162,13 @@ fun InAppWebViewScreen(
                     },
                     onProgressChanged = viewModel::updateProgress,
                     onPageError = viewModel::setError,
-                    onEmbeddedUnsupported = viewModel::setError
+                    onEmbeddedUnsupported = viewModel::setError,
+                    timeoutError = timeoutError,
+                    incompatibleError = incompatibleError,
+                    unsupportedLinkError = unsupportedLinkError,
+                    loadError = loadError,
+                    httpError = httpError,
+                    unknownHttpStatus = unknownHttpStatus
                 )
             }
         }
@@ -191,7 +214,7 @@ private fun InAppWebViewScreenContent(
                 modifier = Modifier.fillMaxSize()
             ) {
                 RedTopBar(
-                    title = state.screenTitle,
+                    title = stringResource(R.string.nda_webform_title),
                     onBack = onBack
                 )
 
@@ -234,9 +257,9 @@ private fun InAppWebViewScreenContent(
                         WebViewErrorPanel(
                             message = state.errorMessage,
                             showRetry = showRetry,
-                            retryText = state.retryButtonText,
-                            openSecureFormText = "OPEN SECURE FORM",
-                            backText = state.backButtonText,
+                            retryText = stringResource(R.string.webview_retry_button),
+                            openSecureFormText = stringResource(R.string.webview_open_secure_form),
+                            backText = stringResource(R.string.webview_back_button),
                             onRetry = onRetry,
                             onOpenSecureForm = onOpenSecureForm,
                             onBack = onBack
@@ -274,7 +297,7 @@ private fun RedTopBar(
         ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                contentDescription = "Back",
+                contentDescription = stringResource(R.string.content_description_back),
                 tint = RedNdaBlack
             )
         }
@@ -315,7 +338,10 @@ private fun LoadingOverlay(
                 CircularProgressIndicator(color = RedNdaRed)
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    text = "Loading NDA form ${progress.coerceIn(0, 100)}%",
+                    text = stringResource(
+                        R.string.webview_loading_progress,
+                        progress.coerceIn(0, 100)
+                    ),
                     color = RedNdaBlack,
                     style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium)
                 )
@@ -335,6 +361,12 @@ private fun RedWebView(
     onProgressChanged: (Int) -> Unit,
     onPageError: (String) -> Unit,
     onEmbeddedUnsupported: (String) -> Unit,
+    timeoutError: String,
+    incompatibleError: String,
+    unsupportedLinkError: String,
+    loadError: String,
+    httpError: String,
+    unknownHttpStatus: String,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -348,7 +380,7 @@ private fun RedWebView(
                 currentWebView.progress == 0 &&
                 currentWebView.url.isNullOrBlank()
             ) {
-                onPageError("The NDA form is taking too long to load in WebView. Please try again.")
+                onPageError(timeoutError)
             }
         }
     }
@@ -376,13 +408,14 @@ private fun RedWebView(
                     override fun onConsoleMessage(consoleMessage: ConsoleMessage?): Boolean {
                         val message = consoleMessage?.message().orEmpty()
                         if (
-                            message.contains("Something went wrong initializing 1ds-app", ignoreCase = true) ||
+                            message.contains(
+                                "Something went wrong initializing 1ds-app",
+                                ignoreCase = true
+                            ) ||
                             message.contains("SyntaxError: Unexpected token", ignoreCase = true)
                         ) {
                             mainHandler.removeCallbacks(loadTimeout)
-                            onEmbeddedUnsupported(
-                                "This device's Android WebView is not compatible with the DocuSign form. Open the secure form in a browser tab or update Android System WebView/Chrome."
-                            )
+                            onEmbeddedUnsupported(incompatibleError)
                             return true
                         }
                         return super.onConsoleMessage(consoleMessage)
@@ -414,10 +447,11 @@ private fun RedWebView(
 
                         return when {
                             scheme.equals("http", ignoreCase = true) ||
-                                scheme.equals("https", ignoreCase = true) -> false
+                                    scheme.equals("https", ignoreCase = true) -> false
+
                             else -> {
                                 onPageError(
-                                    "This DocuSign step requested an unsupported link: $targetUrl"
+                                    unsupportedLinkError.format(targetUrl)
                                 )
                                 true
                             }
@@ -443,7 +477,7 @@ private fun RedWebView(
                             mainHandler.removeCallbacks(loadTimeout)
                             onPageError(
                                 error?.description?.toString()
-                                    ?: "Unable to load the NDA form."
+                                    ?: loadError
                             )
                         }
                     }
@@ -456,7 +490,9 @@ private fun RedWebView(
                         if (request?.isForMainFrame == true) {
                             mainHandler.removeCallbacks(loadTimeout)
                             onPageError(
-                                "The NDA form returned an HTTP ${errorResponse?.statusCode ?: "error"} response."
+                                httpError.format(
+                                    errorResponse?.statusCode?.toString() ?: unknownHttpStatus
+                                )
                             )
                         }
                     }
@@ -556,10 +592,22 @@ private fun WebViewBackdrop(
         }
 
         val scratches = listOf(
-            Pair(Offset(size.width * 0.06f, size.height * 0.08f), Offset(size.width * 0.28f, size.height * 0.14f)),
-            Pair(Offset(size.width * 0.66f, size.height * 0.12f), Offset(size.width * 0.90f, size.height * 0.22f)),
-            Pair(Offset(size.width * 0.18f, size.height * 0.76f), Offset(size.width * 0.42f, size.height * 0.82f)),
-            Pair(Offset(size.width * 0.74f, size.height * 0.62f), Offset(size.width * 0.96f, size.height * 0.70f))
+            Pair(
+                Offset(size.width * 0.06f, size.height * 0.08f),
+                Offset(size.width * 0.28f, size.height * 0.14f)
+            ),
+            Pair(
+                Offset(size.width * 0.66f, size.height * 0.12f),
+                Offset(size.width * 0.90f, size.height * 0.22f)
+            ),
+            Pair(
+                Offset(size.width * 0.18f, size.height * 0.76f),
+                Offset(size.width * 0.42f, size.height * 0.82f)
+            ),
+            Pair(
+                Offset(size.width * 0.74f, size.height * 0.62f),
+                Offset(size.width * 0.96f, size.height * 0.70f)
+            )
         )
 
         scratches.forEachIndexed { index, (start, end) ->
@@ -606,7 +654,7 @@ private fun WebViewErrorPanel(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "ERROR",
+                text = stringResource(R.string.generic_error_title),
                 color = RedNdaBlack,
                 style = MaterialTheme.typography.headlineLarge.copy(
                     fontWeight = FontWeight.ExtraBold
@@ -669,12 +717,12 @@ private fun InAppWebViewScreenPreview() {
     val previewState = WebViewUiState(
         formLink = NdaFormLink(
             url = DocuSignConstants.NDA_WEBFORM_URL,
-            title = "Complete NDA",
-            shareSubject = "RED NDA App",
-            shareMessagePrefix = "Use this secure DocuSign WebForm link to complete the NDA:\n"
+            title = stringResource(R.string.nda_webform_title),
+            shareSubject = stringResource(R.string.nda_share_subject),
+            shareMessagePrefix = stringResource(R.string.nda_share_message_prefix)
         ),
         isLoading = false,
-        errorMessage = "Unable to connect to the DocuSign WebForm. Please check the connection and try again."
+        errorMessage = stringResource(R.string.webview_preview_error)
     )
 
     RedNdaTheme {
@@ -693,8 +741,14 @@ private fun InAppWebViewScreenPreview() {
 
 private data class WebViewSupport(
     val isSupported: Boolean,
-    val unsupportedReason: String? = null
+    val unsupportedReason: WebViewUnsupportedReason? = null,
+    val majorVersion: Int? = null
 )
+
+private enum class WebViewUnsupportedReason {
+    Unavailable,
+    TooOld
+}
 
 private fun evaluateWebViewSupport(): WebViewSupport {
     //noinspection WebViewApiAvailability
@@ -709,14 +763,15 @@ private fun evaluateWebViewSupport(): WebViewSupport {
     if (majorVersion == null) {
         return WebViewSupport(
             isSupported = false,
-            unsupportedReason = "Android System WebView is unavailable on this device. Open the secure form in a browser tab."
+            unsupportedReason = WebViewUnsupportedReason.Unavailable
         )
     }
 
     return if (majorVersion < 100) {
         WebViewSupport(
             isSupported = false,
-            unsupportedReason = "This device is using Android System WebView $majorVersion, which is too old for the DocuSign form. Open the secure form in a browser tab or update Android System WebView/Chrome."
+            unsupportedReason = WebViewUnsupportedReason.TooOld,
+            majorVersion = majorVersion
         )
     } else {
         WebViewSupport(isSupported = true)
