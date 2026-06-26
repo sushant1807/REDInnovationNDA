@@ -8,11 +8,9 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -42,7 +40,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
@@ -72,7 +69,6 @@ import com.redinnovationlabs.redinnovationnda.presentation.theme.RedNdaCircuitLi
 import com.redinnovationlabs.redinnovationnda.presentation.theme.RedNdaDarkGray
 import com.redinnovationlabs.redinnovationnda.presentation.theme.RedNdaLightGray
 import com.redinnovationlabs.redinnovationnda.presentation.theme.RedNdaRed
-import com.redinnovationlabs.redinnovationnda.presentation.theme.RedNdaRedDark
 import com.redinnovationlabs.redinnovationnda.presentation.theme.RedNdaTheme
 import com.redinnovationlabs.redinnovationnda.presentation.theme.RedNdaWhite
 import androidx.lifecycle.Lifecycle
@@ -108,7 +104,6 @@ fun NdaHomeScreen(
     val headerProgress = remember { Animatable(0f) }
     val firstCardProgress = remember { Animatable(0f) }
     val secondCardProgress = remember { Animatable(0f) }
-    val footerProgress = remember { Animatable(0f) }
     var animationCycle by rememberSaveable { mutableIntStateOf(0) }
     var appWasBackgrounded by rememberSaveable { mutableStateOf(false) }
     var isAttractVisible by rememberSaveable { mutableStateOf(false) }
@@ -152,7 +147,6 @@ fun NdaHomeScreen(
         headerProgress.snapTo(0f)
         firstCardProgress.snapTo(0f)
         secondCardProgress.snapTo(0f)
-        footerProgress.snapTo(0f)
 
         launch {
             logoProgress.animateTo(
@@ -181,13 +175,6 @@ fun NdaHomeScreen(
                 animationSpec = tween(durationMillis = 560, easing = FastOutSlowInEasing)
             )
         }
-        launch {
-            delay(400.milliseconds)
-            footerProgress.animateTo(
-                targetValue = 1f,
-                animationSpec = tween(durationMillis = 440, easing = FastOutSlowInEasing)
-            )
-        }
     }
 
     LaunchedEffect(attractTimerCycle) {
@@ -206,11 +193,10 @@ fun NdaHomeScreen(
             val horizontalPadding = if (isTabletPortrait) 32.dp else 22.dp
             val topPadding = if (isTabletPortrait) 44.dp else 32.dp
             val bottomPadding = if (isTabletPortrait) 18.dp else 14.dp
-            val cardMaxWidth = if (isTabletPortrait) 560.dp else 460.dp
+            val cardMaxWidth = if (isTabletPortrait) 650.dp else 500.dp
             val logoOffsetPx = with(LocalDensity.current) { 18.dp.toPx() }
             val headerOffsetPx = with(LocalDensity.current) { 22.dp.toPx() }
             val cardOffsetPx = with(LocalDensity.current) { 28.dp.toPx() }
-            val footerOffsetPx = with(LocalDensity.current) { 18.dp.toPx() }
 
             Box(
                 modifier = Modifier
@@ -259,7 +245,7 @@ fun NdaHomeScreen(
                         title = stringResource(R.string.home_welcome_title),
                         subtitle = stringResource(R.string.home_welcome_subtitle),
                         modifier = Modifier
-                            .widthIn(max = 560.dp)
+                            .widthIn(max = 640.dp)
                             .graphicsLayer {
                                 alpha = headerProgress.value
                                 translationY = headerOffsetPx * (1f - headerProgress.value)
@@ -303,7 +289,7 @@ fun NdaHomeScreen(
                         }
                     )
 
-                    Spacer(modifier = Modifier.height(36.dp))
+                    Spacer(modifier = Modifier.height(if (isTabletPortrait) 30.dp else 24.dp))
 
                     NdaOptionCard(
                         modifier = Modifier
@@ -336,15 +322,7 @@ fun NdaHomeScreen(
                         }
                     )
 
-                    Spacer(modifier = Modifier.height(if (isTabletPortrait) 36.dp else 12.dp))
-
-                    FooterBrand(
-                        modifier = Modifier.graphicsLayer {
-                            alpha = footerProgress.value
-                            translationY = footerOffsetPx * (1f - footerProgress.value)
-                        }
-                    )
-                    Spacer(modifier = Modifier.height(if (isTabletPortrait) 12.dp else 10.dp))
+                    Spacer(modifier = Modifier.height(if (isTabletPortrait) 42.dp else 22.dp))
                 }
 
                 IdleAttractOverlay(
@@ -533,13 +511,13 @@ fun BrandLogo(
         Image(
             painter = painterResource(id = R.drawable.logo_innovation_labs),
             contentDescription = stringResource(R.string.content_description_red_innovation_labs),
-            modifier = Modifier.widthIn(max = 340.dp),
+            modifier = Modifier.widthIn(max = 430.dp),
             contentScale = ContentScale.FillWidth
         )
         Spacer(modifier = Modifier.height(6.dp))
         Canvas(
             modifier = Modifier
-                .width(176.dp)
+                .width(216.dp)
                 .height(3.dp)
         ) {
             drawLine(
@@ -569,8 +547,8 @@ fun WelcomeHeader(
             color = RedNdaBlack,
             style = MaterialTheme.typography.displaySmall.copy(
                 fontWeight = FontWeight.ExtraBold,
-                fontSize = 32.sp,
-                lineHeight = 34.sp
+                fontSize = 42.sp,
+                lineHeight = 46.sp
             ),
             textAlign = TextAlign.Center
         )
@@ -594,8 +572,8 @@ fun WelcomeHeader(
             color = RedNdaDarkGray,
             style = MaterialTheme.typography.bodyLarge.copy(
                 fontWeight = FontWeight.Medium,
-                fontSize = 16.sp,
-                lineHeight = 24.sp
+                fontSize = 21.sp,
+                lineHeight = 30.sp
             ),
             textAlign = TextAlign.Center
         )
@@ -628,37 +606,37 @@ fun NdaOptionCard(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 24.dp, vertical = 20.dp),
+                    .padding(horizontal = 34.dp, vertical = 28.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Box(
                     modifier = Modifier
-                        .size(108.dp)
+                        .size(132.dp)
                         .background(RedNdaLightGray.copy(alpha = 0.7f), CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
                         painter = painterResource(id = iconRes),
                         contentDescription = null,
-                        modifier = Modifier.size(64.dp)
+                        modifier = Modifier.size(78.dp)
                     )
                 }
 
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(14.dp))
 
                 Text(
                     text = title,
                     color = RedNdaBlack,
                     style = MaterialTheme.typography.headlineMedium.copy(
                         fontWeight = FontWeight.ExtraBold,
-                        fontSize = 22.sp,
-                        lineHeight = 28.sp,
-                        letterSpacing = (-0.4).sp
+                        fontSize = 30.sp,
+                        lineHeight = 36.sp,
+                        letterSpacing = 0.sp
                     ),
                     textAlign = TextAlign.Center
                 )
 
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
                 Canvas(
                     modifier = Modifier
@@ -674,25 +652,27 @@ fun NdaOptionCard(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(14.dp))
 
                 Text(
                     text = description,
                     color = RedNdaDarkGray,
                     style = MaterialTheme.typography.bodyLarge.copy(
                         fontWeight = FontWeight.Medium,
-                        fontSize = 15.sp,
-                        lineHeight = 20.sp
+                        fontSize = 20.sp,
+                        lineHeight = 28.sp
                     ),
                     textAlign = TextAlign.Center
                 )
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(18.dp))
 
                 RedPrimaryButton(
                     text = buttonText,
                     onClick = onClick,
                     modifier = Modifier.fillMaxWidth(),
+                    minHeight = 70.dp,
+                    fontSize = 20.sp,
                     trailingContent = {
                         Icon(
                             painter = painterResource(id = buttonIconRes),
@@ -710,7 +690,7 @@ fun NdaOptionCard(
 private fun CardCornerAccent() {
     Canvas(
         modifier = Modifier
-            .size(width = 44.dp, height = 44.dp)
+            .size(width = 58.dp, height = 58.dp)
     ) {
         val path = Path().apply {
             moveTo(0f, 0f)
@@ -719,55 +699,6 @@ private fun CardCornerAccent() {
             close()
         }
         drawPath(path = path, color = RedNdaRed)
-    }
-}
-
-@Composable
-fun FooterBrand(
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        DecorativeDivider(modifier = Modifier.width(88.dp))
-        Image(
-            painter = painterResource(id = R.drawable.logo_red_automation_black),
-            contentDescription = stringResource(R.string.content_description_red_automation),
-            modifier = Modifier
-                .padding(horizontal = 14.dp)
-                .widthIn(max = 220.dp),
-            contentScale = ContentScale.FillWidth
-        )
-        DecorativeDivider(modifier = Modifier.width(88.dp))
-    }
-}
-
-@Composable
-private fun DecorativeDivider(
-    modifier: Modifier = Modifier
-) {
-    Canvas(
-        modifier = modifier.height(12.dp)
-    ) {
-        val centerY = size.height / 2f
-        drawLine(
-            color = RedNdaBorderGray,
-            start = Offset(0f, centerY),
-            end = Offset(size.width * 0.78f, centerY),
-            strokeWidth = 1.6f
-        )
-        drawRect(
-            color = RedNdaBlack,
-            topLeft = Offset(size.width * 0.82f, centerY - 2f),
-            size = Size(8f, 4f)
-        )
-        drawRect(
-            color = RedNdaRedDark,
-            topLeft = Offset(size.width * 0.88f, centerY - 2f),
-            size = Size(12f, 4f)
-        )
     }
 }
 

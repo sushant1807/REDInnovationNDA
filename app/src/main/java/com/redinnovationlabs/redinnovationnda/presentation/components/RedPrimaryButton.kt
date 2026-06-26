@@ -22,7 +22,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.redinnovationlabs.redinnovationnda.presentation.theme.RedNdaRed
 import com.redinnovationlabs.redinnovationnda.presentation.theme.RedNdaRedDark
 import com.redinnovationlabs.redinnovationnda.presentation.theme.RedNdaWhite
@@ -33,6 +35,8 @@ fun RedPrimaryButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    minHeight: Dp = 56.dp,
+    fontSize: androidx.compose.ui.unit.TextUnit = 16.sp,
     trailingContent: (@Composable () -> Unit)? = null
 ) {
     val interactionSource = remember { MutableInteractionSource() }
@@ -71,7 +75,7 @@ fun RedPrimaryButton(
             shape = RoundedCornerShape(14.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .heightIn(min = 56.dp),
+                .heightIn(min = minHeight),
             colors = ButtonDefaults.buttonColors(
                 containerColor = if (isPressed) RedNdaRedDark else RedNdaRed,
                 contentColor = RedNdaWhite
@@ -81,6 +85,7 @@ fun RedPrimaryButton(
             Text(
                 text = text,
                 fontWeight = FontWeight.ExtraBold,
+                fontSize = fontSize,
                 modifier = Modifier.weight(1f, fill = false)
             )
             if (trailingContent != null) {
